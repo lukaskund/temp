@@ -1,6 +1,6 @@
 # temp
 
-Static site prepared for GitHub Pages.
+Static site prepared for GitHub Pages with GitHub Actions CI/CD.
 
 ## Files
 
@@ -8,12 +8,18 @@ Static site prepared for GitHub Pages.
 - `styles.css`
 - `script.js`
 
-## Publish on GitHub Pages
+## CI/CD
+
+The repository includes a GitHub Actions workflow at `.github/workflows/pages.yml`.
+
+- `test` job verifies the required static files and checks that `index.html` references the CSS and JavaScript files.
+- `deploy` job runs only after tests pass and publishes the site to GitHub Pages on pushes to `main`.
+
+## GitHub Pages Setup
 
 1. Open the repository on GitHub.
 2. Go to `Settings` -> `Pages`.
-3. Under `Build and deployment`, choose `Deploy from a branch`.
-4. Select branch `main` and folder `/(root)`.
+3. Under `Build and deployment`, choose `GitHub Actions`.
 5. Save.
 
 The site will be published at:
