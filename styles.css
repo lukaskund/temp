@@ -46,3 +46,9 @@ button:hover,
 button:focus-visible {
   background: var(--button-hover);
 }
+
+.version {
+  margin: 0;
+  color: #5d6780;
+  font-size: 0.95rem;
+}

@@ -4,6 +4,7 @@ test("shows hello dialog when the button is clicked", async ({ page }) => {
   await page.goto("/");
 
   await expect(page.getByRole("heading", { name: "Hello World" })).toBeVisible();
+  await expect(page.getByText("Version: dev")).toBeVisible();
 
   page.once("dialog", async (dialog) => {
     expect(dialog.message()).toBe("Hello!");
