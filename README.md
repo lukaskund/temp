@@ -1,4 +1,4 @@
-# bakis
+# temp
 
 Static site prepared for GitHub Pages.
 
@@ -18,4 +18,4 @@ Static site prepared for GitHub Pages.
 
 The site will be published at:
 
-`https://lukaskund.github.io/bakis/`
+`https://lukaskund.github.io/temp/`
