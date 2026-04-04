@@ -9,4 +9,4 @@ GitHub Pages site with GitHub Actions CI/CD and Playwright end-to-end tests.
 
 The site is published at:
 
-`https://lukaskund.github.io/temp/`
+[https://lukaskund.github.io/temp/](https://lukaskund.github.io/temp/)
