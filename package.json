@@ -2,6 +2,7 @@
   "name": "temp",
   "private": true,
   "scripts": {
+    "build": "node ./scripts/build.mjs",
     "test:e2e": "playwright test"
   },
   "devDependencies": {
