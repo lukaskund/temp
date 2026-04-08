@@ -2,7 +2,7 @@
   "name": "temp",
   "private": true,
   "scripts": {
-    "build": "node ./scripts/build.mjs",
+    "build": "rm -rf dist && mkdir -p dist && cp index.html script.js styles.css version.json dist/",
     "test:e2e": "playwright test"
   },
   "devDependencies": {
