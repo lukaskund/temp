@@ -35,3 +35,7 @@ The default Playwright config starts a local server for the built site and runs 
 - There is no root Node project anymore.
 - If you change the site, edit files in `web/`.
 - If you change automation, edit files in `e2e/`.
+
+## Deployed Site
+
+https://lukaskund.github.io/temp/
