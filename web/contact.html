@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact — PawShop</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .contact-layout{max-width:1000px;margin:0 auto;padding:64px 48px;display:grid;grid-template-columns:1fr 1.4fr;gap:64px;align-items:start}
+    .contact-info h2{font-family:'Cormorant Garamond',serif;font-size:36px;color:var(--cream);margin-bottom:16px;font-weight:500}
+    .contact-info p{color:var(--text-mid);font-size:15px;line-height:1.8;margin-bottom:36px}
+    .contact-item{display:flex;gap:16px;margin-bottom:28px;align-items:flex-start}
+    .contact-icon{width:44px;height:44px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+    .contact-item h4{font-size:13px;font-weight:600;color:var(--cream);margin-bottom:4px;letter-spacing:.02em}
+    .contact-item p{font-size:14px;color:var(--text-mid);margin:0}
+    .contact-form{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:44px}
+    .contact-form h2{font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--cream);margin-bottom:28px;font-weight:500}
+    textarea{resize:vertical;min-height:120px}
+  </style>
+</head>
+<body data-page="contact">
+  <div id="nav-placeholder"></div>
+  <div class="page-header"><h1>Get in touch</h1><p>We'd love to hear from you</p></div>
+  <div class="contact-layout" data-testid="contact-page">
+    <div class="contact-info">
+      <h2>We're here to help</h2>
+      <p>Have a question about your order or a product? Our team is available Monday–Friday, 9am–5pm.</p>
+      <div class="contact-item"><div class="contact-icon">📧</div><div><h4>Email</h4><p>hello@pawshop.com</p></div></div>
+      <div class="contact-item"><div class="contact-icon">📞</div><div><h4>Phone</h4><p>+1 (555) 123-4567</p></div></div>
+      <div class="contact-item"><div class="contact-icon">🕐</div><div><h4>Hours</h4><p>Mon–Fri, 9am–5pm EST</p></div></div>
+      <div class="contact-item"><div class="contact-icon">📦</div><div><h4>Order issues</h4><p>Include your order number for fastest help</p></div></div>
+    </div>
+    <div class="contact-form" data-testid="contact-form-card">
+      <h2>Send us a message</h2>
+      <div id="success-msg" class="alert alert-success" style="display:none" data-testid="contact-success">✓ Message sent! We'll get back to you within 24 hours.</div>
+      <form id="contact-form" novalidate>
+        <div class="form-group"><label for="name">Your name</label><input type="text" id="name" name="name" required placeholder="Jane Doe" data-testid="input-name"><div class="field-error"></div></div>
+        <div class="form-group"><label for="email">Email address</label><input type="email" id="email" name="email" required placeholder="jane@example.com" data-testid="input-email"><div class="field-error"></div></div>
+        <div class="form-group">
+          <label for="subject">Subject</label>
+          <select id="subject" name="subject" required data-testid="select-subject">
+            <option value="">Select a topic…</option>
+            <option value="order">Order enquiry</option>
+            <option value="return">Return / refund</option>
+            <option value="product">Product question</option>
+            <option value="other">Other</option>
+          </select>
+          <div class="field-error"></div>
+        </div>
+        <div class="form-group"><label for="message">Message</label><textarea id="message" name="message" required placeholder="How can we help?" data-testid="input-message"></textarea><div class="field-error"></div></div>
+        <button type="submit" class="btn-primary btn-full" data-testid="contact-submit">Send Message</button>
+      </form>
+    </div>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="app.js"></script><script src="layout.js"></script>
+  <script>
+    document.getElementById('contact-form').addEventListener('submit', e => {
+      e.preventDefault();
+      if(validateForm(e.target)){e.target.style.display='none';document.getElementById('success-msg').style.display='block';}
+    });
+  </script>
+</body>
+</html>

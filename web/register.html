@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register — PawShop</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .auth-wrapper{min-height:calc(100vh - 120px);display:flex;align-items:center;justify-content:center;padding:48px;background:radial-gradient(ellipse at 50% 0%,rgba(232,164,90,.06) 0%,transparent 60%)}
+    .auth-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:52px;width:100%;max-width:480px}
+    .auth-logo{text-align:center;margin-bottom:36px}
+    .auth-logo a{font-family:'Cormorant Garamond',serif;font-size:30px;color:var(--cream);text-decoration:none;font-weight:500}
+    .auth-logo a span{color:var(--amber)}
+    .auth-card h1{font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--cream);margin-bottom:6px;font-weight:500}
+    .auth-card .auth-sub{font-size:14px;color:var(--text-dim);margin-bottom:32px}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .auth-footer{margin-top:20px;text-align:center;font-size:14px;color:var(--text-dim)}
+    .auth-footer a{color:var(--amber);text-decoration:none;font-weight:500}
+    .terms{font-size:12px;color:var(--text-dim);text-align:center;margin-top:16px;line-height:1.6}
+    .terms a{color:var(--amber);text-decoration:none}
+  </style>
+</head>
+<body data-page="login">
+  <div id="nav-placeholder"></div>
+  <div class="auth-wrapper" data-testid="register-page">
+    <div class="auth-card" data-testid="register-form-card">
+      <div class="auth-logo"><a href="index.html">Paw<span>Shop</span></a></div>
+      <h1>Create account</h1>
+      <p class="auth-sub">Join the PawShop family today</p>
+      <div id="register-error" class="alert alert-error" style="display:none" role="alert"></div>
+      <form id="register-form" novalidate>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="first-name">First name</label>
+            <input type="text" id="first-name" name="firstName" required placeholder="Jane" data-testid="input-firstname">
+            <div class="field-error"></div>
+          </div>
+          <div class="form-group">
+            <label for="last-name">Last name</label>
+            <input type="text" id="last-name" name="lastName" required placeholder="Doe" data-testid="input-lastname">
+            <div class="field-error"></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="email">Email address</label>
+          <input type="email" id="email" name="email" required placeholder="jane@example.com" data-testid="input-email">
+          <div class="field-error"></div>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required placeholder="At least 8 characters" data-testid="input-password">
+          <div class="field-error"></div>
+        </div>
+        <div class="form-group">
+          <label for="confirm-password">Confirm password</label>
+          <input type="password" id="confirm-password" name="confirmPassword" required placeholder="Repeat password" data-testid="input-confirm-password">
+          <div class="field-error"></div>
+        </div>
+        <button type="submit" class="btn-primary btn-full" style="margin-top:8px" data-testid="register-btn">Create Account</button>
+        <p class="terms">By registering you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</p>
+      </form>
+      <div class="auth-footer" style="margin-top:20px">Already have an account? <a href="login.html" data-testid="login-link">Sign in</a></div>
+    </div>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="app.js"></script><script src="layout.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('register-form').addEventListener('submit', e => {
+        e.preventDefault();
+        const errorEl=document.getElementById('register-error');
+        errorEl.style.display='none';
+        if(!validateForm(e.target))return;
+        const pw=document.getElementById('password').value;
+        const cpw=document.getElementById('confirm-password').value;
+        if(pw.length<8){const i=document.getElementById('password');i.classList.add('error');const el=i.parentElement.querySelector('.field-error');if(el){el.textContent='Password must be at least 8 characters';el.classList.add('show');}return;}
+        if(pw!==cpw){const i=document.getElementById('confirm-password');i.classList.add('error');const el=i.parentElement.querySelector('.field-error');if(el){el.textContent='Passwords do not match';el.classList.add('show');}return;}
+        const email=document.getElementById('email').value;
+        if(Users.find(email)){errorEl.textContent='An account with this email already exists.';errorEl.style.display='block';return;}
+        const user={name:document.getElementById('first-name').value+' '+document.getElementById('last-name').value,email,password:pw};
+        Users.register(user);
+        localStorage.setItem('pawshop_user',JSON.stringify({email:user.email,name:user.name}));
+        showToast('Account created! Welcome to PawShop 🐾');
+        setTimeout(()=>window.location.href='index.html',1000);
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,6 +1,8 @@
-.idea/
+.DS_Store
 node_modules/
 dist/
 playwright-report/
 test-results/
-/.codex
+screenshots/
+playwright/.auth/
+.env

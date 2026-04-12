@@ -1,0 +1,140 @@
+---
+description: Playwright E2E framework rules for PawShop project
+alwaysApply: true
+---
+
+# Playwright Framework Rules
+
+## Project structure
+All paths are relative to the project root.
+
+- `src/pages/` — page object classes (`BasePage.ts`, LoginPage.ts, RegisterPage.ts, …)
+- `src/pages/index.ts` — barrel export for all page objects
+- `src/page-objects/PageObjectManager.ts` — facade with lazy getters for each page
+- `src/fixtures/index.ts` — extended test with pom, authenticatedPom, testUser
+- `src/config/env.ts` — environment variables with Zod validation
+- `src/constants/routes.ts` — all page URL paths
+- `src/helpers/test-step.ts` — @TestStep decorator for HTML report steps
+- `src/utils/helpers.ts` — uniqueId(), retry(), waitForRequest(), waitForResponse()
+- `tests/e2e/` — spec files (*.spec.ts)
+- `web/` — PawShop website HTML source files
+
+## TypeScript path aliases
+Only one alias is defined — `@/*` maps to `src/*`.
+
+- Always use `@/` prefix for all internal imports
+- Never use bare aliases without slash — `@pages/` or `@fixtures/` are invalid
+- Never import `test` or `expect` from `@playwright/test` in spec files
+- Check `tsconfig.json` paths section for all available aliases
+
+## Imports
+
+### Spec files (tests/e2e/*.spec.ts)
+- Always import `test` and `expect` from `@/fixtures/index`
+- Never import `test` or `expect` from `@playwright/test` in spec files
+- Access all page objects via `pom` fixture — never instantiate pages directly in specs
+
+### Page object classes (src/pages/*.ts)
+- Import `Page` and `Locator` from `@playwright/test`
+- Import `TestStep` from `@/helpers/test-step`
+- Import `ROUTES` from `@/constants/routes`
+- Never import from `@/fixtures` in page objects — causes circular imports
+
+## Page objects
+- All page objects extend `BasePage` from `@/pages/BasePage`
+- If you declare a constructor, call `super(page)`; otherwise TypeScript forwards `new MyPage(page)` to `BasePage`
+- One class per page — LoginPage, RegisterPage, HomePage etc.
+- All locators defined as `get` properties returning `Locator`
+- All public action methods decorated with `@TestStep`
+- Export all pages from `src/pages/index.ts`
+- Register every page in `PageObjectManager` with lazy getter
+
+## BasePage available methods
+- `navigate(path: string)` — navigate to path using baseURL
+- `waitForPageLoad()` — wait for domcontentloaded and networkidle
+- `fillField(locator: Locator, value: string)` — clear and fill input
+- `assertVisible(locator: Locator)` — assert element is visible
+- `assertText(locator: Locator, text: string)` — assert element text
+- `assertURL(urlPattern: string | RegExp)` — assert current URL
+- `clickAndWait(locator: Locator)` — click and wait for page load
+- `waitForElement(locator: Locator, timeout?: number)` — wait for element
+- `takeScreenshot(name: string)` — save screenshot
+
+## Naming conventions
+- Page object files: `LoginPage.ts`, `RegisterPage.ts`
+- Spec files: `login.spec.ts`, `register.spec.ts` — one file per feature
+- Locator getters: `get emailInput()`, `get submitButton()`
+- Action methods: `login()`, `submitRegistration()`, `goto()`
+
+## Locators
+- Always prefer `page.getByTestId()` for all locators
+- If element has no data-testid use `getByRole()`, `getByLabel()` or `getByText()`
+- Use CSS selectors or XPath only as last resort
+- Never hardcode selectors that could break with UI changes
+- Always verify data-testid values against actual HTML in `web/` folder
+- Never assume or guess data-testid values
+
+## Fixtures
+- `pom` — PageObjectManager for unauthenticated tests
+- `authenticatedPom` — PageObjectManager with already logged in user
+- `authenticatedPage` — raw Page with already logged in user
+- `testUser` — `{ email, password }` from env variables
+
+## Tests
+- All specs go in `tests/e2e/`
+- One spec file per feature area
+- Always use `test.describe()` with `@regression` tag
+- Each test must be fully independent — no shared state between tests
+- Use `test.beforeEach()` for repeated navigation or setup
+- Use `uniqueId()` from `@/utils/helpers` for unique emails and test data
+- Use `testUser` fixture for passwords — never hardcode credentials
+- Use `authenticatedPom` for tests that require logged in user
+- Never build test data in spec file — handle in page object methods
+
+## Routes
+- Never hardcode URLs in spec files
+- All page objects navigate using `ROUTES` from `@/constants/routes`
+- `ROUTES` values are relative paths — Playwright uses `baseURL` from config
+
+## Step methods (@TestStep)
+- Import `TestStep` from `@/helpers/test-step`
+- Decorate all public page object methods with `@TestStep`
+- Simple locator getters do not need `@TestStep`
+- Goal — every user action visible in HTML report and traces
+
+## Assertions
+- In spec files always use `expect` from `@/fixtures/index`
+- In page objects use `expect` from `@playwright/test`
+- Add short message as second argument on important assertions
+- Always cover both positive and negative cases
+
+## TypeScript
+- Always use `async/await` — never `.then()` chains
+- Never use `any` type
+- Let TypeScript infer return types — avoid redundant `: Promise<void>`
+- Type variables only when inference is unclear
+
+## PawShop source code
+- PawShop HTML files are in `web/` folder
+- Always read actual HTML to find correct data-testid values
+- Never assume data-testid values — always verify in HTML source
+- JavaScript in HTML may add data-testid attributes dynamically
+- Never modify any files in `web/` folder
+
+## Anti-patterns — never do these
+- `page.waitForTimeout()` — use locator waits or expect instead
+- `page.pause()` in committed code
+- Hardcoded URLs in spec files — use ROUTES
+- Hardcoded credentials — use testUser fixture
+- Shared state between tests
+- Instantiating page objects directly in spec files
+- Importing from `@playwright/test` in spec files
+- Using bare aliases without `@/` prefix
+- Assuming data-testid values without checking HTML source
+- Modifying files in `web/` folder
+
+## ESLint
+- ESLint auto-fixes on save via `.vscode/settings.json`
+- Run `npm run lint` before committing
+- Never use `// eslint-disable` unless absolutely necessary
+- Never use `any` type — ESLint will catch this

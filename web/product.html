@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product — PawShop</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .product-detail{max-width:1100px;margin:0 auto;padding:48px;display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:start}
+    .product-img{border-radius:var(--radius-lg);overflow:hidden;border:1px solid var(--border)}
+    .product-img img{width:100%;height:480px;object-fit:cover;display:block}
+    .product-category{font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--amber);font-weight:600;margin-bottom:12px}
+    .product-title{font-family:'Cormorant Garamond',serif;font-size:36px;color:var(--cream);margin-bottom:16px;line-height:1.2;font-weight:500}
+    .product-rating{display:flex;align-items:center;gap:10px;margin-bottom:20px}
+    .stars{color:#E8A45A;font-size:16px}
+    .rating-text{font-size:14px;color:var(--text-mid)}
+    .product-price{font-size:32px;font-weight:700;color:var(--cream);margin-bottom:24px}
+    .product-desc{font-size:15px;color:var(--text-mid);line-height:1.8;margin-bottom:28px}
+    .add-section{display:flex;gap:16px;align-items:center;margin-bottom:28px}
+    .add-section .btn-primary{flex:1;padding:15px;font-size:16px;text-align:center}
+    .product-meta{border-top:1px solid var(--border);padding-top:24px}
+    .meta-row{display:flex;gap:12px;margin-bottom:10px;font-size:14px}
+    .meta-label{color:var(--text-mid);min-width:100px}
+    .meta-value{color:var(--cream);font-weight:500}
+    .reviews-section{max-width:1100px;margin:0 auto;padding:0 48px 48px}
+    .reviews-section h2{font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--cream);margin-bottom:28px;font-weight:500}
+    .review-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:22px;margin-bottom:16px}
+    .review-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+    .review-author{font-weight:600;font-size:15px;color:var(--cream)}
+    .review-date{font-size:13px;color:var(--text-mid)}
+    .review-body{font-size:14px;color:var(--text-mid);line-height:1.7}
+    .related-section{max-width:1200px;margin:0 auto;padding:0 48px 48px}
+    .related-section h2{font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--cream);margin-bottom:28px;font-weight:500}
+    .related-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+  </style>
+</head>
+<body data-page="shop">
+  <div id="nav-placeholder"></div>
+  <div class="breadcrumb" id="breadcrumb" data-testid="breadcrumb">
+    <a href="index.html" data-testid="breadcrumb-home">Home</a><span>›</span>
+    <a href="shop.html" data-testid="breadcrumb-shop">Shop</a><span>›</span>
+    <span id="bc-product">Product</span>
+  </div>
+  <div class="product-detail" id="product-detail" data-testid="product-detail">
+    <div style="text-align:center;grid-column:1/-1;padding:60px;color:var(--text-mid)">Loading product…</div>
+  </div>
+  <section class="reviews-section" id="reviews-section" style="display:none" data-testid="reviews-section">
+    <h2>Customer reviews</h2>
+    <div id="reviews-list"></div>
+  </section>
+  <section class="related-section" id="related-section" style="display:none" data-testid="related-section">
+    <h2>You might also like</h2>
+    <div class="related-grid" id="related-grid"></div>
+  </section>
+  <div id="footer-placeholder"></div>
+
+  <script src="products.js"></script><script src="app.js"></script><script src="layout.js"></script>
+  <script>
+    const REVIEWS = {
+      1: [
+        {author:'Sarah M.',date:'March 2025',rating:5,text:'My golden absolutely loves this food. Coat is shinier and he has so much more energy. Will definitely reorder!'},
+        {author:'James K.',date:'February 2025',rating:5,text:'Great quality, good price. Delivery was fast and packaging was excellent.'},
+        {author:'Emily R.',date:'January 2025',rating:4,text:'My picky eater actually loves this. Solid ingredients and no upset tummies.'},
+      ],
+    };
+    let currentProduct = null, qty = 1;
+
+    function updateQty(delta) {
+      qty = Math.max(1, qty + delta);
+      document.getElementById('qty-input').value = qty;
+    }
+
+    function addToCart() {
+      if (!currentProduct) return;
+      Cart.add({id:currentProduct.id,name:currentProduct.name,price:currentProduct.price,img:currentProduct.img,qty});
+      showToast(`${currentProduct.name} added to cart`);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(location.search);
+      const id = parseInt(params.get('id'));
+      const product = PRODUCTS.find(p => p.id === id);
+
+      if (!product) {
+        document.getElementById('product-detail').innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--text-mid)"><h2 style="font-family:\'Cormorant Garamond\',serif;color:var(--cream)">Product not found</h2><p style="margin:12px 0 24px"><a href="shop.html" style="color:var(--amber)">Back to shop →</a></p></div>';
+        return;
+      }
+
+      currentProduct = product;
+      document.title = `${product.name} — PawShop`;
+      document.getElementById('bc-product').textContent = product.name;
+
+      document.getElementById('product-detail').innerHTML = `
+        <div class="product-img" data-testid="product-image-wrap">
+          <img src="${product.img}" alt="${product.name}" data-testid="product-image">
+        </div>
+        <div class="product-info" data-testid="product-info">
+          <div class="product-category" data-testid="product-category">${product.category}</div>
+          <h1 class="product-title" data-testid="product-title">${product.name}</h1>
+          <div class="product-rating" data-testid="product-rating">
+            <span class="stars">${'★'.repeat(Math.round(product.rating))}${'☆'.repeat(5-Math.round(product.rating))}</span>
+            <span class="rating-text">${product.rating} (${product.reviews} reviews)</span>
+          </div>
+          <div class="product-price" data-testid="product-price">$${product.price.toFixed(2)}</div>
+          <p class="product-desc" data-testid="product-description">${product.description}</p>
+          <div class="add-section">
+            <div class="qty-selector" data-testid="qty-selector">
+              <button class="qty-btn" onclick="updateQty(-1)" aria-label="Decrease quantity" data-testid="qty-decrease-btn">−</button>
+              <input class="qty-input" id="qty-input" type="number" value="1" min="1" max="99" readonly data-testid="qty-input">
+              <button class="qty-btn" onclick="updateQty(1)" aria-label="Increase quantity" data-testid="qty-increase-btn">+</button>
+            </div>
+            <button class="btn-primary" onclick="addToCart()" data-testid="add-to-cart-btn">Add to Cart</button>
+          </div>
+          <div class="product-meta" data-testid="product-meta">
+            <div class="meta-row"><span class="meta-label">Category</span><span class="meta-value" data-testid="meta-category">${product.category}</span></div>
+            <div class="meta-row"><span class="meta-label">In stock</span><span class="meta-value" style="color:var(--success)" data-testid="meta-stock">✓ Available</span></div>
+            <div class="meta-row"><span class="meta-label">Shipping</span><span class="meta-value" data-testid="meta-shipping">Free over $50</span></div>
+          </div>
+        </div>`;
+
+      const reviewsData = REVIEWS[id] || [
+        {author:'Alex T.',date:'March 2025',rating:5,text:'Excellent quality, exactly as described. My pet loves it!'},
+        {author:'Sophie L.',date:'February 2025',rating:4,text:'Good product, arrived quickly and well packaged.'},
+      ];
+      document.getElementById('reviews-section').style.display = 'block';
+      document.getElementById('reviews-list').innerHTML = reviewsData.map((r,i) => `
+        <div class="review-card" data-testid="review-card" data-review-index="${i}">
+          <div class="review-header">
+            <span class="review-author" data-testid="review-author">${r.author}</span>
+            <span class="review-date" data-testid="review-date">${r.date}</span>
+          </div>
+          <div style="color:#E8A45A;margin-bottom:8px" data-testid="review-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
+          <p class="review-body" data-testid="review-text">${r.text}</p>
+        </div>`).join('');
+
+      const related = PRODUCTS.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4);
+      if (related.length) {
+        document.getElementById('related-section').style.display = 'block';
+        document.getElementById('related-grid').innerHTML = related.map(p => `
+          <div class="product-card" data-testid="related-product-card" data-product-id="${p.id}">
+            <div class="product-img-wrap">
+              <a href="product.html?id=${p.id}" data-testid="related-product-link-${p.id}">
+                <img src="${p.img}" alt="${p.name}" loading="lazy" data-testid="related-product-img">
+              </a>
+            </div>
+            <div class="product-card-body">
+              <div class="product-card-name">${p.name}</div>
+              <div class="product-card-price">$${p.price.toFixed(2)}</div>
+              <button class="btn-primary" onclick="Cart.add({id:${p.id},name:'${p.name}',price:${p.price},img:'${p.img}'});showToast('${p.name} added to cart')" data-testid="related-add-to-cart-${p.id}">Add to Cart</button>
+            </div>
+          </div>`).join('');
+      }
+    });
+  </script>
+</body>
+</html>

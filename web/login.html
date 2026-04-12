@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — PawShop</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .auth-wrapper{min-height:calc(100vh - 120px);display:flex;align-items:center;justify-content:center;padding:48px;background:radial-gradient(ellipse at 50% 0%,rgba(232,164,90,.06) 0%,transparent 60%)}
+    .auth-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:52px;width:100%;max-width:440px}
+    .auth-logo{text-align:center;margin-bottom:36px}
+    .auth-logo a{font-family:'Cormorant Garamond',serif;font-size:30px;color:var(--cream);text-decoration:none;font-weight:500}
+    .auth-logo a span{color:var(--amber)}
+    .auth-card h1{font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--cream);margin-bottom:6px;font-weight:500}
+    .auth-card .auth-sub{font-size:14px;color:var(--text-dim);margin-bottom:32px}
+    .auth-footer{margin-top:24px;text-align:center;font-size:14px;color:var(--text-dim)}
+    .auth-footer a{color:var(--amber);text-decoration:none;font-weight:500}
+    .divider{display:flex;align-items:center;gap:12px;margin:24px 0;color:var(--text-dim);font-size:13px}
+    .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+    .forgot-link{display:block;text-align:right;font-size:13px;color:var(--amber);text-decoration:none;margin-top:-12px;margin-bottom:24px;transition:opacity .2s}
+    .forgot-link:hover{opacity:.7}
+  </style>
+</head>
+<body data-page="login">
+  <div id="nav-placeholder"></div>
+  <div class="auth-wrapper" data-testid="login-page">
+    <div class="auth-card" data-testid="login-form-card">
+      <div class="auth-logo"><a href="index.html">Paw<span>Shop</span></a></div>
+      <h1>Welcome back</h1>
+      <p class="auth-sub">Sign in to your account</p>
+      <div id="login-error" class="alert alert-error" style="display:none" role="alert"></div>
+      <form id="login-form" novalidate>
+        <div class="form-group">
+          <label for="email">Email address</label>
+          <input type="email" id="email" name="email" required placeholder="you@example.com" autocomplete="email" data-testid="input-email">
+          <div class="field-error"></div>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required placeholder="••••••••" autocomplete="current-password" data-testid="input-password">
+          <div class="field-error"></div>
+        </div>
+        <a href="#" class="forgot-link" data-testid="forgot-password">Forgot password?</a>
+        <button type="submit" class="btn-primary btn-full" data-testid="login-btn">Sign in</button>
+      </form>
+      <div class="divider">or</div>
+      <div class="auth-footer">Don't have an account? <a href="register.html" data-testid="register-link">Create one</a></div>
+    </div>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="app.js"></script><script src="layout.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const DEMO_EMAIL='test@pawshop.com', DEMO_PASSWORD='password123';
+      document.getElementById('login-form').addEventListener('submit', e => {
+        e.preventDefault();
+        const errorEl=document.getElementById('login-error');
+        errorEl.style.display='none';
+        if(!validateForm(e.target))return;
+        const email=document.getElementById('email').value;
+        const password=document.getElementById('password').value;
+        const isDemoUser=email===DEMO_EMAIL&&password===DEMO_PASSWORD;
+        const registeredUser=Users.find(email);
+        const isRegisteredUser=registeredUser&&registeredUser.password===password;
+        if(isDemoUser||isRegisteredUser){
+          const name=isDemoUser?'Test User':registeredUser.name;
+          localStorage.setItem('pawshop_user',JSON.stringify({email,name}));
+          showToast('Welcome back!');
+          setTimeout(()=>window.location.href='index.html',800);
+        } else {
+          errorEl.textContent='Invalid email or password.';
+          errorEl.style.display='block';
+        }
+      });
+      document.querySelector('.forgot-link').addEventListener('click',e=>{e.preventDefault();showToast('Password reset link sent to your email','📧');});
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PawShop — Premium Pet Supplies</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .hero{background:var(--charcoal);padding:80px 48px;display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+    .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 80% 50%,rgba(232,164,90,.07) 0%,transparent 60%);pointer-events:none}
+    .hero-tag{font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--amber);font-weight:600;margin-bottom:18px}
+    .hero h1{font-family:'Cormorant Garamond',serif;font-size:62px;font-weight:500;color:var(--cream);line-height:1.05;margin-bottom:20px;letter-spacing:-.01em}
+    .hero h1 em{color:var(--amber);font-style:italic}
+    .hero p{font-size:16px;color:var(--text-mid);margin-bottom:36px;line-height:1.8;max-width:400px}
+    .hero-btns{display:flex;gap:14px;flex-wrap:wrap}
+    .hero-img{position:relative;border-radius:var(--radius-lg);overflow:hidden;height:420px;border:1px solid var(--border)}
+    .hero-img img{width:100%;height:100%;object-fit:cover;display:block}
+    .hero-badge{position:absolute;bottom:24px;left:-12px;background:var(--surface2);border:1px solid var(--border-mid);padding:16px 22px;border-radius:var(--radius-md);backdrop-filter:blur(12px)}
+    .hero-badge strong{display:block;font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--amber);font-weight:500}
+    .hero-badge span{font-size:12px;color:var(--text-mid)}
+    .section{padding:72px 48px}
+    .section-hd{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:36px}
+    .section-hd h2{font-family:'Cormorant Garamond',serif;font-size:38px;color:var(--cream);font-weight:500}
+    .section-hd a{color:var(--amber);text-decoration:none;font-size:13px;letter-spacing:.04em}
+    .cats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+    .products-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+    .promo{background:var(--surface);border-top:1px solid rgba(232,164,90,.15);border-bottom:1px solid rgba(232,164,90,.15);padding:64px 48px;display:grid;grid-template-columns:1fr auto;align-items:center;gap:40px;position:relative;overflow:hidden}
+    .promo::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 0% 50%,rgba(232,164,90,.06) 0%,transparent 60%);pointer-events:none}
+    .promo-tag{font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:var(--amber);margin-bottom:12px;font-weight:600}
+    .promo h2{font-family:'Cormorant Garamond',serif;font-size:40px;color:var(--cream);font-weight:500;margin-bottom:10px;line-height:1.15}
+    .promo p{font-size:14px;color:var(--text-mid)}
+    .newsletter{background:var(--charcoal);padding:72px 48px;text-align:center;border-top:1px solid var(--border)}
+    .newsletter h2{font-family:'Cormorant Garamond',serif;font-size:38px;color:var(--cream);font-weight:500;margin-bottom:12px}
+    .newsletter p{color:var(--text-mid);margin-bottom:32px;font-size:15px}
+    .nl-form{display:flex;gap:12px;max-width:460px;margin:0 auto}
+    .nl-form input{flex:1}
+    .nl-form button{white-space:nowrap}
+  </style>
+</head>
+<body data-page="home">
+  <div id="nav-placeholder"></div>
+
+  <section class="hero" data-testid="hero-section">
+    <div class="fade-up fade-up-1">
+      <div class="hero-tag">New arrivals 2025</div>
+      <h1>Everything your<br><em>pet deserves</em></h1>
+      <p>Premium food, toys, and accessories — thoughtfully chosen for happy, healthy companions.</p>
+      <div class="hero-btns">
+        <a href="shop.html" class="btn-primary" data-testid="hero-shop-btn">Shop Now</a>
+        <a href="shop.html?category=food" class="btn-secondary" data-testid="hero-browse-food-btn">Browse Food</a>
+      </div>
+    </div>
+    <div class="hero-img fade-up fade-up-2" data-testid="hero-image">
+      <img src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=900&q=80" alt="Happy dog">
+      <div class="hero-badge"><strong>500+</strong><span>Happy customers</span></div>
+    </div>
+  </section>
+
+  <section class="section" data-testid="categories-section">
+    <div class="section-hd">
+      <h2>Shop by category</h2>
+      <a href="shop.html" data-testid="categories-view-all">View all →</a>
+    </div>
+    <div class="cats-grid">
+      <a href="shop.html?category=food" class="cat-card" data-testid="cat-food">
+        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80" alt="Food & Treats">
+        <div class="cat-overlay"></div>
+        <div class="cat-label"><span>Category</span><h3>Food & Treats</h3><p>Premium nutrition</p></div>
+      </a>
+      <a href="shop.html?category=toys" class="cat-card" data-testid="cat-toys">
+        <img src="https://images.unsplash.com/photo-1576201836106-db1758fd1c97?w=600&q=80" alt="Toys">
+        <div class="cat-overlay"></div>
+        <div class="cat-label"><span>Category</span><h3>Toys</h3><p>Keep them entertained</p></div>
+      </a>
+      <a href="shop.html?category=accessories" class="cat-card" data-testid="cat-accessories">
+        <img src="https://images.unsplash.com/photo-1601758124510-52d02ddb7cbd?w=600&q=80" alt="Accessories">
+        <div class="cat-overlay"></div>
+        <div class="cat-label"><span>Category</span><h3>Accessories</h3><p>Leashes, bowls & more</p></div>
+      </a>
+      <a href="shop.html?category=beds" class="cat-card" data-testid="cat-beds">
+        <img src="https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=600&q=80" alt="Beds">
+        <div class="cat-overlay"></div>
+        <div class="cat-label"><span>Category</span><h3>Beds & Comfort</h3><p>Cosy spots to rest</p></div>
+      </a>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0;background:var(--charcoal)" data-testid="featured-section">
+    <div style="padding-top:72px">
+      <div class="section-hd">
+        <h2>Featured products</h2>
+        <a href="shop.html" data-testid="featured-see-all">See all →</a>
+      </div>
+      <div class="products-grid" id="featured-products"></div>
+    </div>
+  </section>
+
+  <div class="promo" data-testid="promo-banner">
+    <div>
+      <div class="promo-tag">Limited time offer</div>
+      <h2>Save up to 50%<br>on selected items</h2>
+      <p>Stock up on your pet's favourites before they sell out.</p>
+    </div>
+    <a href="shop.html" class="btn-primary" style="white-space:nowrap" data-testid="promo-shop-btn">Shop the sale</a>
+  </div>
+
+  <section class="newsletter" data-testid="newsletter-section">
+    <h2>Join the PawShop family</h2>
+    <p>Exclusive deals, pet care tips, and new arrivals straight to your inbox.</p>
+    <form class="nl-form" id="newsletter-form" novalidate data-testid="newsletter-form">
+      <div class="form-group" style="margin:0;flex:1">
+        <input type="email" id="newsletter-email" placeholder="your@email.com" required aria-label="Email address" data-testid="newsletter-email-input">
+        <div class="field-error"></div>
+      </div>
+      <button type="submit" class="btn-primary" data-testid="newsletter-submit-btn">Subscribe</button>
+    </form>
+    <div id="newsletter-msg" style="margin-top:16px;font-size:14px;color:var(--success);display:none" data-testid="newsletter-success">✓ You're subscribed! Welcome to the pack.</div>
+  </section>
+
+  <div id="footer-placeholder"></div>
+  <script src="products.js"></script>
+  <script src="app.js"></script>
+  <script src="layout.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const grid = document.getElementById('featured-products');
+      PRODUCTS.slice(0, 8).forEach(p => {
+        grid.innerHTML += `
+          <div class="product-card" data-testid="product-card" data-product-id="${p.id}">
+            <div class="product-img-wrap">
+              <a href="product.html?id=${p.id}" data-testid="product-link-${p.id}">
+                <img src="${p.img}" alt="${p.name}" loading="lazy" data-testid="product-img-${p.id}">
+              </a>
+            </div>
+            <div class="product-card-body">
+              <div class="product-card-category" data-testid="product-category">${p.category}</div>
+              <div class="product-card-name" data-testid="product-name">${p.name}</div>
+              <div class="product-card-price" data-testid="product-price">$${p.price.toFixed(2)}</div>
+              <button class="btn-primary" onclick="addToCart(${p.id})" data-testid="add-to-cart-${p.id}">Add to Cart</button>
+            </div>
+          </div>`;
+      });
+      document.getElementById('newsletter-form').addEventListener('submit', e => {
+        e.preventDefault();
+        if (validateForm(e.target)) { document.getElementById('newsletter-msg').style.display='block'; e.target.reset(); }
+      });
+    });
+    function addToCart(id) {
+      const p = PRODUCTS.find(x => x.id === id);
+      Cart.add({id:p.id,name:p.name,price:p.price,img:p.img});
+      showToast(`${p.name} added to cart`);
+    }
+  </script>
+</body>
+</html>

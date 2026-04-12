@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Confirmed — PawShop</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .confirmation{max-width:640px;margin:64px auto;padding:0 48px;text-align:center}
+    .success-icon{width:80px;height:80px;background:rgba(106,175,126,.15);border:1px solid rgba(106,175,126,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 28px;font-size:32px;color:var(--success)}
+    .confirmation h1{font-family:'Cormorant Garamond',serif;font-size:42px;color:var(--cream);margin-bottom:12px;font-weight:500}
+    .subtitle{font-size:15px;color:var(--text-mid);margin-bottom:36px;line-height:1.8}
+    .order-number{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:22px;margin-bottom:32px}
+    .order-number span{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-dim);margin-bottom:8px}
+    .order-number strong{font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--amber);font-weight:500}
+    .order-details{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:28px;margin-bottom:32px;text-align:left}
+    .order-details h2{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:500;color:var(--cream);margin-bottom:18px}
+    .detail-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:14px}
+    .detail-row:last-child{border-bottom:none;font-weight:700;font-size:16px;color:var(--cream)}
+    .detail-row span:first-child{color:var(--text-mid)}
+    .conf-actions{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+  </style>
+</head>
+<body data-page="home">
+  <div id="nav-placeholder"></div>
+  <div class="confirmation" data-testid="confirmation-page">
+    <div class="success-icon" data-testid="success-icon">✓</div>
+    <h1 data-testid="confirmation-heading">Order confirmed!</h1>
+    <p class="subtitle" data-testid="confirmation-subtitle">Thank you for your order. We'll send you a confirmation email with tracking details once your package is on its way.</p>
+    <div class="order-number" data-testid="order-number-block">
+      <span>Order number</span>
+      <strong id="order-num" data-testid="order-number">—</strong>
+    </div>
+    <div class="order-details" id="order-details" data-testid="order-details">
+      <h2>Order summary</h2>
+      <div id="order-items-list" data-testid="confirmation-items-list"></div>
+    </div>
+    <div class="conf-actions" data-testid="confirmation-actions">
+      <a href="shop.html" class="btn-primary" data-testid="continue-shopping-btn">Continue Shopping</a>
+      <a href="index.html" class="btn-secondary" data-testid="back-home-btn">Back to Home</a>
+    </div>
+  </div>
+  <div id="footer-placeholder"></div>
+
+  <script src="app.js"></script><script src="layout.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const order = JSON.parse(localStorage.getItem('pawshop_last_order') || '{}');
+      if (order.number) {
+        document.getElementById('order-num').textContent = order.number;
+        document.title = `Order ${order.number} Confirmed — PawShop`;
+      }
+      if (order.email) {
+        document.querySelector('.subtitle').textContent = `Thank you, ${order.name}! We'll send a confirmation to ${order.email} once your package ships.`;
+      }
+      const listEl = document.getElementById('order-items-list');
+      if (order.items && order.items.length) {
+        listEl.innerHTML = order.items.map(i => `
+          <div class="detail-row" data-testid="confirmation-item">
+            <span>${i.name} × ${i.qty}</span>
+            <span>$${(i.price * i.qty).toFixed(2)}</span>
+          </div>`).join('') + `
+          <div class="detail-row">
+            <span>Total paid</span>
+            <span data-testid="confirmed-total">$${order.total}</span>
+          </div>`;
+      } else {
+        listEl.innerHTML = '<p style="color:var(--text-mid);font-size:14px">No order details available.</p>';
+      }
+    });
+  </script>
+</body>
+</html>
