@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shop — PawShop</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .shop-layout{display:grid;grid-template-columns:220px 1fr;gap:48px;max-width:1200px;margin:0 auto;padding:48px}
+    .filter-sidebar{position:sticky;top:90px;align-self:start}
+    .filter-section{margin-bottom:32px}
+    .filter-section h3{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--text-dim);margin-bottom:16px;font-weight:600}
+    .filter-option{display:flex;align-items:center;gap:10px;margin-bottom:12px;cursor:pointer}
+    .filter-option input[type=radio]{accent-color:var(--amber);width:15px;height:15px;cursor:pointer}
+    .filter-option label{font-size:14px;color:var(--text-mid);cursor:pointer;transition:color .2s}
+    .filter-option:hover label{color:var(--cream)}
+    .filter-option label span{color:var(--text-dim);font-size:12px;margin-left:3px}
+    .price-inputs{display:flex;gap:8px;align-items:center}
+    .price-inputs input{width:80px!important;padding:9px 12px!important;font-size:13px!important}
+    .price-inputs span{color:var(--text-dim);font-size:13px}
+    .shop-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px}
+    .result-count{font-size:13px;color:var(--text-dim);letter-spacing:.02em}
+    .sort-select{padding:9px 16px;border:1px solid var(--border);border-radius:100px;font-family:'Outfit',sans-serif;font-size:13px;background:var(--surface);color:var(--text);cursor:pointer;width:auto!important;outline:none}
+    .sort-select:focus{border-color:var(--amber)}
+    .products-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+    .no-results{text-align:center;padding:80px;color:var(--text-dim);grid-column:1/-1}
+    .no-results h3{font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--text-mid);margin-bottom:8px}
+    .sidebar-divider{border:none;border-top:1px solid var(--border);margin:24px 0}
+  </style>
+</head>
+<body data-page="shop">
+  <div id="nav-placeholder"></div>
+  <div class="page-header" data-testid="shop-page-header">
+    <h1>Our Shop</h1>
+    <p>Premium supplies for every kind of pet</p>
+  </div>
+  <div class="breadcrumb">
+    <a href="index.html">Home</a><span>›</span><span id="breadcrumb-current">All Products</span>
+  </div>
+  <div class="shop-layout" data-testid="shop-layout">
+    <aside class="filter-sidebar" data-testid="filter-sidebar" data-section="filters">
+      <div class="filter-section">
+        <h3>Category</h3>
+        <div class="filter-option" data-testid="filter-all"><input type="radio" name="category" id="cat-all" value="all" checked><label for="cat-all">All Products <span>(16)</span></label></div>
+        <div class="filter-option" data-testid="filter-food"><input type="radio" name="category" id="cat-food" value="food"><label for="cat-food">Food & Treats <span>(4)</span></label></div>
+        <div class="filter-option" data-testid="filter-toys"><input type="radio" name="category" id="cat-toys" value="toys"><label for="cat-toys">Toys <span>(4)</span></label></div>
+        <div class="filter-option" data-testid="filter-accessories"><input type="radio" name="category" id="cat-accessories" value="accessories"><label for="cat-accessories">Accessories <span>(4)</span></label></div>
+        <div class="filter-option" data-testid="filter-beds"><input type="radio" name="category" id="cat-beds" value="beds"><label for="cat-beds">Beds & Comfort <span>(4)</span></label></div>
+      </div>
+      <hr class="sidebar-divider">
+      <div class="filter-section">
+        <h3>Price range</h3>
+        <div class="price-inputs">
+          <input type="number" id="price-min" placeholder="$0" min="0" data-testid="price-min">
+          <span>–</span>
+          <input type="number" id="price-max" placeholder="$200" min="0" data-testid="price-max">
+        </div>
+        <button class="btn-secondary" style="margin-top:14px;padding:9px 20px;font-size:13px;width:100%" onclick="applyFilters()">Apply</button>
+      </div>
+      <hr class="sidebar-divider">
+      <button class="btn-secondary" style="font-size:13px;padding:10px;width:100%" onclick="resetFilters()" data-testid="reset-filters">Clear all filters</button>
+    </aside>
+    <div>
+      <div class="shop-toolbar">
+        <span class="result-count" id="result-count">16 products</span>
+        <select class="sort-select" id="sort-select" aria-label="Sort products" data-testid="sort-select">
+          <option value="default">Default</option>
+          <option value="price-asc">Price: Low to High</option>
+          <option value="price-desc">Price: High to Low</option>
+          <option value="name-asc">Name: A–Z</option>
+          <option value="rating">Top Rated</option>
+        </select>
+      </div>
+      <div class="products-grid" id="products-grid"></div>
+    </div>
+  </div>
+  <div id="footer-placeholder"></div>
+  <script src="products.js"></script><script src="app.js"></script><script src="layout.js"></script>
+  <script>
+    let activeCategory='all',activeSort='default',priceMin=0,priceMax=Infinity;
+    function applyFilters(){
+      priceMin=parseFloat(document.getElementById('price-min').value)||0;
+      priceMax=parseFloat(document.getElementById('price-max').value)||Infinity;
+      renderProducts();
+    }
+    function resetFilters(){
+      document.querySelector('input[name="category"][value="all"]').checked=true;
+      document.getElementById('price-min').value='';document.getElementById('price-max').value='';
+      document.getElementById('sort-select').value='default';
+      activeCategory='all';activeSort='default';priceMin=0;priceMax=Infinity;renderProducts();
+    }
+    function renderProducts(){
+      let filtered=PRODUCTS.filter(p=>(activeCategory==='all'||p.category===activeCategory)&&p.price>=priceMin&&p.price<=priceMax);
+      if(activeSort==='price-asc')filtered.sort((a,b)=>a.price-b.price);
+      else if(activeSort==='price-desc')filtered.sort((a,b)=>b.price-a.price);
+      else if(activeSort==='name-asc')filtered.sort((a,b)=>a.name.localeCompare(b.name));
+      else if(activeSort==='rating')filtered.sort((a,b)=>b.rating-a.rating);
+      const grid=document.getElementById('products-grid');
+      document.getElementById('result-count').textContent=`${filtered.length} product${filtered.length!==1?'s':''}`;
+      if(!filtered.length){grid.innerHTML='<div class="no-results"><h3>No products found</h3><p>Try adjusting your filters.</p></div>';return;}
+      grid.innerHTML=filtered.map(p=>`
+        <div class="product-card" data-testid="product-card" data-id="${p.id}" data-category="${p.category}" data-price="${p.price}">
+          <div class="product-img-wrap"><a href="product.html?id=${p.id}"><img src="${p.img}" alt="${p.name}" loading="lazy"></a></div>
+          <div class="product-card-body">
+            <div class="product-card-category">${p.category}</div>
+            <div class="product-card-name">${p.name}</div>
+            <div class="product-card-price">$${p.price.toFixed(2)}</div>
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:14px">
+              <span style="color:#E8A45A;font-size:13px">${'★'.repeat(Math.round(p.rating))}${'☆'.repeat(5-Math.round(p.rating))}</span>
+              <span style="font-size:12px;color:var(--text-dim)">(${p.reviews})</span>
+            </div>
+            <button class="btn-primary" onclick="addToCart(${p.id})" data-testid="add-to-cart">Add to Cart</button>
+          </div>
+        </div>`).join('');
+    }
+    function addToCart(id){const p=PRODUCTS.find(x=>x.id===id);Cart.add({id:p.id,name:p.name,price:p.price,img:p.img});showToast(`${p.name} added to cart`);}
+    document.addEventListener('DOMContentLoaded',()=>{
+      const params=new URLSearchParams(location.search);
+      const cat=params.get('category');
+      if(cat){activeCategory=cat;const r=document.querySelector(`input[name="category"][value="${cat}"]`);if(r)r.checked=true;document.getElementById('breadcrumb-current').textContent=cat.charAt(0).toUpperCase()+cat.slice(1);}
+      document.querySelectorAll('input[name="category"]').forEach(r=>r.addEventListener('change',()=>{activeCategory=r.value;renderProducts();}));
+      document.getElementById('sort-select').addEventListener('change',e=>{activeSort=e.target.value;renderProducts();});
+      renderProducts();
+    });
+  </script>
+</body>
+</html>

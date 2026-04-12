@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout — PawShop</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .checkout-layout{max-width:1100px;margin:0 auto;padding:48px;display:grid;grid-template-columns:1fr 340px;gap:48px;align-items:start}
+    .checkout-form h2{font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--cream);margin-bottom:24px;font-weight:500}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .section-divider{border:none;border-top:1px solid var(--border);margin:32px 0}
+    .order-summary{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:28px;position:sticky;top:90px}
+    .order-summary h2{font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--cream);margin-bottom:20px;font-weight:500}
+    .order-item{display:flex;gap:14px;margin-bottom:16px;align-items:center}
+    .order-item img{width:52px;height:52px;object-fit:cover;border-radius:8px;border:1px solid var(--border)}
+    .order-item-info{flex:1}
+    .order-item-name{font-size:13px;font-weight:500;color:var(--cream)}
+    .order-item-qty{font-size:12px;color:var(--text-mid)}
+    .order-item-price{font-size:13px;font-weight:600;color:var(--cream)}
+    .summary-row{display:flex;justify-content:space-between;font-size:14px;margin-bottom:10px;color:var(--text-mid)}
+    .summary-row.total{font-weight:700;font-size:17px;color:var(--cream);border-top:1px solid var(--border);padding-top:14px;margin-top:6px}
+    .pay-icons{display:flex;gap:8px;margin-bottom:20px}
+    .pay-icon{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 12px;font-size:11px;color:var(--text-mid);font-weight:600;letter-spacing:.04em}
+    .empty-cart-msg{text-align:center;padding:60px;max-width:500px;margin:0 auto}
+  </style>
+</head>
+<body data-page="shop">
+  <div id="nav-placeholder"></div>
+  <div class="page-header" data-testid="checkout-page-header"><h1>Checkout</h1></div>
+  <div class="breadcrumb">
+    <a href="index.html" data-testid="breadcrumb-home">Home</a><span>›</span>
+    <a href="cart.html" data-testid="breadcrumb-cart">Cart</a><span>›</span>
+    <span>Checkout</span>
+  </div>
+  <div id="checkout-content"></div>
+  <div id="footer-placeholder"></div>
+
+  <script src="products.js"></script><script src="app.js"></script><script src="layout.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const items = Cart.get();
+      const el = document.getElementById('checkout-content');
+
+      if (!items.length) {
+        el.innerHTML = `<div class="empty-cart-msg"><h2 style="font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--cream);margin-bottom:12px">Your cart is empty</h2><p style="color:var(--text-mid);margin-bottom:24px">Add some products before checking out.</p><a href="shop.html" class="btn-primary" data-testid="empty-checkout-shop-btn">Go to Shop</a></div>`;
+        return;
+      }
+
+      const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
+      const shipping = subtotal >= 50 ? 0 : 5.99;
+      const total = subtotal + shipping;
+
+      el.innerHTML = `
+        <div class="checkout-layout">
+          <form class="checkout-form" id="checkout-form" novalidate data-testid="checkout-form">
+            <h2>Contact information</h2>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="first-name">First name *</label>
+                <input type="text" id="first-name" name="firstName" required placeholder="Jane" data-testid="input-firstname">
+                <div class="field-error"></div>
+              </div>
+              <div class="form-group">
+                <label for="last-name">Last name *</label>
+                <input type="text" id="last-name" name="lastName" required placeholder="Doe" data-testid="input-lastname">
+                <div class="field-error"></div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="email">Email address *</label>
+              <input type="email" id="email" name="email" required placeholder="jane@example.com" data-testid="input-email">
+              <div class="field-error"></div>
+            </div>
+            <div class="form-group">
+              <label for="phone">Phone number</label>
+              <input type="tel" id="phone" name="phone" placeholder="+1 (555) 000-0000" data-testid="input-phone">
+              <div class="field-error"></div>
+            </div>
+            <hr class="section-divider">
+            <h2>Shipping address</h2>
+            <div class="form-group">
+              <label for="address">Street address *</label>
+              <input type="text" id="address" name="address" required placeholder="123 Main Street" data-testid="input-address">
+              <div class="field-error"></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="city">City *</label>
+                <input type="text" id="city" name="city" required placeholder="New York" data-testid="input-city">
+                <div class="field-error"></div>
+              </div>
+              <div class="form-group">
+                <label for="postal">Postal code *</label>
+                <input type="text" id="postal" name="postal" required placeholder="10001" data-testid="input-postal">
+                <div class="field-error"></div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="country">Country *</label>
+              <select id="country" name="country" required data-testid="select-country">
+                <option value="">Select country…</option>
+                <option value="US">United States</option>
+                <option value="GB">United Kingdom</option>
+                <option value="NL">Netherlands</option>
+                <option value="DE">Germany</option>
+                <option value="FR">France</option>
+                <option value="CA">Canada</option>
+                <option value="AU">Australia</option>
+              </select>
+              <div class="field-error"></div>
+            </div>
+            <hr class="section-divider">
+            <h2>Payment</h2>
+            <div class="pay-icons">
+              <span class="pay-icon">VISA</span>
+              <span class="pay-icon">MC</span>
+              <span class="pay-icon">AMEX</span>
+              <span class="pay-icon">PayPal</span>
+            </div>
+            <div class="form-group">
+              <label for="card-number">Card number *</label>
+              <input type="text" id="card-number" name="cardNumber" required placeholder="1234 5678 9012 3456" maxlength="19" data-testid="input-card">
+              <div class="field-error"></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="card-expiry">Expiry date *</label>
+                <input type="text" id="card-expiry" name="cardExpiry" required placeholder="MM / YY" maxlength="7" data-testid="input-expiry">
+                <div class="field-error"></div>
+              </div>
+              <div class="form-group">
+                <label for="card-cvv">CVV *</label>
+                <input type="text" id="card-cvv" name="cardCvv" required placeholder="123" maxlength="4" data-testid="input-cvv">
+                <div class="field-error"></div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="card-name">Name on card *</label>
+              <input type="text" id="card-name" name="cardName" required placeholder="Jane Doe" data-testid="input-cardname">
+              <div class="field-error"></div>
+            </div>
+            <button type="submit" class="btn-primary btn-full" style="margin-top:8px;padding:16px" data-testid="place-order-btn">Place Order →</button>
+            <p style="font-size:12px;color:var(--text-dim);text-align:center;margin-top:12px">🔒 Your payment info is encrypted and secure</p>
+          </form>
+
+          <aside class="order-summary" data-testid="checkout-order-summary">
+            <h2>Your order</h2>
+            <div id="order-items" data-testid="checkout-order-items"></div>
+            <hr style="border:none;border-top:1px solid var(--border);margin:16px 0">
+            <div class="summary-row"><span>Subtotal</span><span data-testid="checkout-subtotal">$${subtotal.toFixed(2)}</span></div>
+            <div class="summary-row"><span>Shipping</span><span data-testid="checkout-shipping">${shipping === 0 ? 'FREE' : '$' + shipping.toFixed(2)}</span></div>
+            <div class="summary-row total"><span>Total</span><span data-testid="order-total">$${total.toFixed(2)}</span></div>
+          </aside>
+        </div>`;
+
+      document.getElementById('order-items').innerHTML = items.map(i => `
+        <div class="order-item" data-testid="checkout-order-item">
+          <img src="${i.img}" alt="${i.name}" data-testid="checkout-item-img">
+          <div class="order-item-info">
+            <div class="order-item-name" data-testid="checkout-item-name">${i.name}</div>
+            <div class="order-item-qty" data-testid="checkout-item-qty">Qty: ${i.qty}</div>
+          </div>
+          <div class="order-item-price" data-testid="checkout-item-price">$${(i.price * i.qty).toFixed(2)}</div>
+        </div>`).join('');
+
+      document.getElementById('card-number').addEventListener('input', e => {
+        let v = e.target.value.replace(/\D/g,'').slice(0,16);
+        e.target.value = v.replace(/(.{4})/g,'$1 ').trim();
+      });
+      document.getElementById('card-expiry').addEventListener('input', e => {
+        let v = e.target.value.replace(/\D/g,'').slice(0,4);
+        if (v.length >= 2) v = v.slice(0,2) + ' / ' + v.slice(2);
+        e.target.value = v;
+      });
+
+      document.getElementById('checkout-form').addEventListener('submit', e => {
+        e.preventDefault();
+        if (validateForm(e.target)) {
+          const order = {
+            number: 'PW-' + Math.random().toString(36).slice(2,8).toUpperCase(),
+            items: Cart.get(), total: total.toFixed(2),
+            name: document.getElementById('first-name').value,
+            email: document.getElementById('email').value,
+            address: `${document.getElementById('address').value}, ${document.getElementById('city').value} ${document.getElementById('postal').value}`,
+          };
+          localStorage.setItem('pawshop_last_order', JSON.stringify(order));
+          Cart.clear();
+          window.location.href = 'confirmation.html';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

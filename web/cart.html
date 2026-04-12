@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cart — PawShop</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .cart-layout{max-width:1200px;margin:0 auto;padding:48px;display:grid;grid-template-columns:1fr 320px;gap:48px;align-items:start}
+    .cart-header{display:grid;grid-template-columns:2fr 100px 160px 100px 40px;gap:12px;padding-bottom:14px;border-bottom:1px solid var(--border);font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-dim);font-weight:600}
+    .cart-row{display:grid;grid-template-columns:2fr 100px 160px 100px 40px;gap:12px;align-items:center;padding:20px 0;border-bottom:1px solid var(--border)}
+    .cart-product{display:flex;gap:14px;align-items:center}
+    .cart-product img{width:72px;height:72px;object-fit:cover;border-radius:10px;border:1px solid var(--border);flex-shrink:0}
+    .cart-product-name{font-weight:500;font-size:14px;color:var(--cream);margin-bottom:4px;line-height:1.3}
+    .cart-price{font-size:14px;color:var(--text-mid)}
+    .cart-subtotal{font-weight:600;font-size:14px;color:var(--cream)}
+    .remove-btn{background:none;border:none;cursor:pointer;color:var(--text-dim);font-size:20px;line-height:1;padding:4px;border-radius:4px;transition:color .15s;display:flex;align-items:center;justify-content:center}
+    .remove-btn:hover{color:var(--error)}
+    .cart-empty{text-align:center;padding:80px 48px}
+    .cart-empty h2{font-family:'Cormorant Garamond',serif;font-size:32px;color:var(--cream);margin-bottom:12px;font-weight:500}
+    .cart-empty p{color:var(--text-mid);margin-bottom:28px}
+    .order-summary{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:28px;position:sticky;top:90px}
+    .order-summary h2{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--cream);margin-bottom:24px;font-weight:500}
+    .summary-row{display:flex;justify-content:space-between;font-size:14px;margin-bottom:12px;color:var(--text-mid)}
+    .summary-row.total{font-weight:700;font-size:17px;color:var(--cream);border-top:1px solid var(--border);padding-top:16px;margin-top:8px}
+    .promo-field{margin:20px 0}
+    .promo-row{display:flex;gap:8px}
+    .promo-row input{flex:1}
+    .promo-row button{padding:13px 16px;font-size:13px;white-space:nowrap}
+  </style>
+</head>
+<body data-page="shop">
+  <div id="nav-placeholder"></div>
+  <div class="page-header" data-testid="cart-page-header"><h1>Shopping Cart</h1></div>
+  <div class="breadcrumb">
+    <a href="index.html" data-testid="breadcrumb-home">Home</a><span>›</span><span>Cart</span>
+  </div>
+  <div id="cart-content"></div>
+  <div id="footer-placeholder"></div>
+
+  <script src="products.js"></script><script src="app.js"></script><script src="layout.js"></script>
+  <script>
+    let freeShippingApplied = false;
+
+    function renderCart() {
+      const items = Cart.get();
+      const el = document.getElementById('cart-content');
+      if (!items.length) {
+        freeShippingApplied = false;
+        el.innerHTML = `
+          <div class="cart-empty" data-testid="cart-empty">
+            <div style="font-size:56px;margin-bottom:20px">🛒</div>
+            <h2>Your cart is empty</h2>
+            <p>Add some products to get started.</p>
+            <a href="shop.html" class="btn-primary" data-testid="cart-browse-btn">Browse Shop</a>
+          </div>`;
+        return;
+      }
+      el.innerHTML = `
+        <div class="cart-layout">
+          <div data-testid="cart-items-section">
+            <div class="cart-header">
+              <span>Product</span><span>Price</span><span>Quantity</span><span>Subtotal</span><span></span>
+            </div>
+            <div id="cart-rows"></div>
+          </div>
+          <aside class="order-summary" data-testid="order-summary">
+            <h2>Order summary</h2>
+            <div class="summary-row"><span>Subtotal</span><span id="sum-subtotal" data-testid="summary-subtotal">$0.00</span></div>
+            <div class="summary-row"><span>Shipping</span><span id="sum-shipping" data-testid="summary-shipping">$0.00</span></div>
+            <div class="summary-row total"><span>Total</span><span id="sum-total" data-testid="summary-total">$0.00</span></div>
+            <div class="promo-field">
+              <label for="promo-code">Promo code</label>
+              <div class="promo-row">
+                <input type="text" id="promo-code" placeholder="PAWFREE" data-testid="promo-input">
+                <button class="btn-secondary" onclick="applyPromo()" data-testid="apply-promo-btn">Apply</button>
+              </div>
+              <div id="promo-msg" style="font-size:13px;margin-top:6px" data-testid="promo-message"></div>
+            </div>
+            <a href="checkout.html" class="btn-primary btn-full" data-testid="checkout-btn" style="display:block;text-align:center;margin-top:4px">Proceed to Checkout</a>
+            <a href="shop.html" style="display:block;text-align:center;margin-top:14px;font-size:14px;color:var(--text-mid);text-decoration:none" data-testid="continue-shopping-link">← Continue shopping</a>
+          </aside>
+        </div>`;
+      renderRows(items);
+      updateSummary(items);
+    }
+
+    function renderRows(items) {
+      document.getElementById('cart-rows').innerHTML = items.map(item => `
+        <div class="cart-row" data-testid="cart-item" data-id="${item.id}">
+          <div class="cart-product">
+            <img src="${item.img}" alt="${item.name}" data-testid="cart-item-img">
+            <div>
+              <div class="cart-product-name" data-testid="cart-item-name">${item.name}</div>
+              <a href="product.html?id=${item.id}" style="font-size:12px;color:var(--amber);text-decoration:none" data-testid="cart-item-link">View product</a>
+            </div>
+          </div>
+          <div class="cart-price" data-testid="cart-item-price">$${item.price.toFixed(2)}</div>
+          <div class="qty-selector" data-testid="cart-qty-selector">
+            <button class="qty-btn" onclick="changeQty(${item.id}, -1)" aria-label="Decrease" data-testid="qty-decrease">−</button>
+            <input class="qty-input" type="number" value="${item.qty}" min="1" max="99" onchange="setQty(${item.id}, this.value)" data-testid="qty-input">
+            <button class="qty-btn" onclick="changeQty(${item.id}, 1)" aria-label="Increase" data-testid="qty-increase">+</button>
+          </div>
+          <div class="cart-subtotal" data-testid="cart-item-subtotal">$${(item.price * item.qty).toFixed(2)}</div>
+          <button class="remove-btn" onclick="removeItem(${item.id})" aria-label="Remove ${item.name}" data-testid="remove-item-btn">×</button>
+        </div>`).join('');
+    }
+
+    function updateSummary(items) {
+      const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
+      const shippingBase = subtotal >= 50 ? 0 : 5.99;
+      const shipping = freeShippingApplied ? 0 : shippingBase;
+      document.getElementById('sum-subtotal').textContent = `$${subtotal.toFixed(2)}`;
+      document.getElementById('sum-shipping').textContent = shipping === 0 ? 'FREE' : `$${shipping.toFixed(2)}`;
+      document.getElementById('sum-total').textContent = `$${(subtotal + shipping).toFixed(2)}`;
+    }
+
+    function changeQty(id, delta) {
+      const items = Cart.get();
+      const item = items.find(i => i.id === id);
+      if (!item) return;
+      Cart.updateQty(id, Math.max(1, item.qty + delta));
+      renderRows(Cart.get());
+      updateSummary(Cart.get());
+    }
+
+    function setQty(id, val) {
+      Cart.updateQty(id, Math.max(1, parseInt(val) || 1));
+      updateSummary(Cart.get());
+    }
+
+    function removeItem(id) {
+      Cart.remove(id);
+      renderCart();
+      showToast('Item removed from cart', '🗑');
+    }
+
+    function applyPromo() {
+      const code = document.getElementById('promo-code').value.trim().toUpperCase();
+      const msg = document.getElementById('promo-msg');
+      if (code === 'PAWFREE') {
+        freeShippingApplied = true;
+        msg.style.color='var(--success)';
+        msg.textContent='✓ Free shipping applied!';
+      } else {
+        freeShippingApplied = false;
+        msg.style.color='var(--error)';
+        msg.textContent='Invalid promo code.';
+      }
+      updateSummary(Cart.get());
+    }
+
+    document.addEventListener('DOMContentLoaded', renderCart);
+  </script>
+</body>
+</html>

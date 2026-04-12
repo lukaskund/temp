@@ -1,0 +1,1 @@
+export { PageObjectManager } from './PageObjectManager';
