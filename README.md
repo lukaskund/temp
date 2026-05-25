@@ -1,4 +1,4 @@
-# PawShop
+# PawShop v1
 
 Static e-commerce demo site with GitHub Pages deployment and Playwright end-to-end tests.
 
