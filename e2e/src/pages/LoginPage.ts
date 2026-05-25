@@ -13,11 +13,11 @@ export class LoginPage extends BasePage {
   }
 
   get submitButton() {
-    return this.page.getByTestId('login-btn');
+    return this.page.getByTestId('login-btn-submit');
   }
 
   get loginPageRoot() {
-    return this.page.getByTestId('login-page');
+    return this.page.getByTestId('login-page-root');
   }
 
   get loginErrorAlert() {
