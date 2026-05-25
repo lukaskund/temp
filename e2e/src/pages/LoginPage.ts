@@ -91,7 +91,7 @@ export class LoginPage extends BasePage {
     );
     await this.assertText(
       this.loginErrorAlert,
-      'Invalid email or password.',
+      'Incorrect username or password.',
       'Error message should explain that login credentials are invalid.'
     );
   }
