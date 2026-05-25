@@ -13,7 +13,7 @@ export class LoginPage extends BasePage {
   }
 
   get submitButton() {
-    return this.page.getByTestId('login-btn-submit');
+    return this.page.getByTestId('login-btn');
   }
 
   get loginPageRoot() {
