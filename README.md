@@ -1,6 +1,6 @@
 # PawShop
 
-Static e-commerce demo site with GitHub Pages deployment and Playwright end-to-end tests.
+Static e-commerce demo site with GitHub Pages deployment and Playwright end-to-end tests
 
 ## Project Structure
 
